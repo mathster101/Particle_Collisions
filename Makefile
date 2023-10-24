@@ -1,4 +1,4 @@
-COMPILE_FLAGS = -static-libgcc -static-libstdc++ -pedantic -O0
+COMPILE_FLAGS = -static-libgcc -static-libstdc++ -pedantic -O2
 SFML_INCL = "C:/Dev/SFML-2.5.1/include"
 SFML_LIBS = -L"C:/Dev/SFML-2.5.1/lib" -lsfml-graphics -lsfml-window -lsfml-system
 

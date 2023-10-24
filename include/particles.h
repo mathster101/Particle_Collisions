@@ -1,6 +1,10 @@
 #include<SFML/Graphics.hpp>
 #include<utility>      // std::pair
 #include<map>
+#include<set>
+#include<cstdlib>
+#include<cmath>
+
 
 #define GRIDSEG 10
 #define DENSITY 0.1
@@ -14,19 +18,22 @@ public:
     float x,y;
     float vx,vy;
     float box_w, box_h;
-private:
     float radius;
     float mass;
+private:
+
     sf::CircleShape circle;
 };
 
 class Box{
 public:
     Box(int screen_height, int screen_width);
-    std::pair<int, int> getGridcoord(float x, float y);
+    std::pair<int, int> getGridcoord(int x, int y);
     void updateGridmap(Particle* p);
-    std::vector<Particle*> getGridnbrs(float x, float y);
+    std::vector<Particle*> getGridnbrs(int x, int y);
     void collisionUpdate();
+    void dbgMap();
+    std::vector<Particle*> particleList;
 private:
     int height, width;
     std::map<std::pair<int,int>, std::vector<Particle*>> gridMap;
