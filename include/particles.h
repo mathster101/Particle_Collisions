@@ -32,6 +32,7 @@ public:
     void updateGridmap(Particle* p);
     std::vector<Particle*> getGridnbrs(int x, int y);
     void collisionUpdate();
+    void calcKinetic();
     void dbgMap();
     std::vector<Particle*> particleList;
 private:

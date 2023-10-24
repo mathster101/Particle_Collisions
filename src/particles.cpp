@@ -6,9 +6,9 @@ Particle::Particle(int screen_height, int screen_width)
 {
     x = rand()%screen_width;
     y = rand()%screen_height;
-    vx = 3 + rand()%6;
-    vy = 3 + rand()%6; 
-    radius = 20 + rand()%20;
+    vx = -6 + rand()%12;
+    vy = -6 + rand()%12; 
+    radius = 10 + rand()%20;
     mass = pow(radius, 3) * DENSITY;
 
     box_h = screen_height;
@@ -53,11 +53,23 @@ void Particle::updatePosition()
 
 void Particle::drawToScreen(sf::RenderWindow &window)
 {
-    circle.setPosition(x,y);
+    circle.setPosition((int)x, (int)y);
     window.draw(circle);
 }
 
 /********************************************************************/
+
+float distanceCalc(Particle *p, Particle *nbr)
+{
+    float d = pow((nbr->x - p->x), 2) + pow((nbr->y - p->y), 2);
+    return pow(d + 0.1, 0.5);
+}
+
+float keCalc(Particle *p)
+{
+    float ke = 0.5 * p->mass * (pow(p->vx, 2) + pow(p->vy, 2));
+    return ke;
+}
 
 Box::Box(int screen_height, int screen_width)
 {
@@ -116,21 +128,18 @@ void Box::collisionUpdate()
             //skip if this is current elem or an elem handled already
             if(nbr == p || alreadyHandled.find(nbr) != alreadyHandled.end())
                 continue;
+            
 
-            float distance = pow((nbr->x - p->x), 2) + pow((nbr->y - p->y), 2);
-            distance = pow(distance, 0.5);
-            if(distance <= (nbr->radius + p->radius))
+            if(distanceCalc(p, nbr) <= (nbr->radius + p->radius))
             {
-                //collision case
-                //std::cout<<"Collision!!!\n";
                 //elastic collision physics
                 float m1 = p->mass;
-                int vx1 = p->vx;
-                int vy1 = p->vy;
+                float vx1 = p->vx;
+                float vy1 = p->vy;
 
                 float m2 = nbr->mass;
-                int vx2 = nbr->vx;
-                int vy2 = nbr->vy;
+                float vx2 = nbr->vx;
+                float vy2 = nbr->vy;
 
                 float alpha, beta, gamma;
                 alpha = 2 * m1 / (m1 + m2);
@@ -142,15 +151,34 @@ void Box::collisionUpdate()
                 p->vy = beta * vy1 + gamma * vy2;
                 nbr->vx = alpha * vx1 - beta * vx2;
                 nbr->vy = alpha * vy1 - beta * vy2;
-                
-                printf("_________________________\n");
-                printf("%f %f %f\n",alpha, beta, gamma);
-                printf("%f %f %f %f\n",p->vx, p->vy, nbr->vx, nbr->vy);
+
+                while(distanceCalc(p, nbr) <= (nbr->radius + p->radius))
+                {
+                    //move both particles out of each other in small steps
+                    p->x += 0.01*p->vx;
+                    p->y += 0.01*p->vy;
+
+                    nbr->x += 0.01*nbr->vx;
+                    nbr->y += 0.01*nbr->vy;
+
+                }
                 alreadyHandled.insert(nbr);
-                //alreadyHandled.insert(p);
+                alreadyHandled.insert(p);
+                //break;
             }
         }
     }
+}
+
+void Box::calcKinetic()
+{
+    float ke = 0;
+    for(auto p : particleList)
+    {
+        ke += keCalc(p);
+    }
+    std::cout<<ke<<"\n";
+
 }
 
 void Box::dbgMap()

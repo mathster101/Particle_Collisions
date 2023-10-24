@@ -12,7 +12,7 @@ particles: src/particles.cpp include/particles.h
 main: src/main.cpp
 	g++ -c src/main.cpp $(COMPILE_FLAGS) -I$(SFML_INCL) -o objects/main.o
 
-output:
+output :
 	g++ objects/main.o objects/particles.o -o output $(SFML_LIBS)
 
 clean:
