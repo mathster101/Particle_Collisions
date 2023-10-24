@@ -6,7 +6,7 @@
 #include<cmath>
 
 
-#define GRIDSEG 10
+#define GRIDSEG 5
 #define DENSITY 0.1
 
 
@@ -18,8 +18,8 @@ public:
     float x,y;
     float vx,vy;
     float box_w, box_h;
-    float radius;
-    float mass;
+    int radius;
+    int mass;
 private:
 
     sf::CircleShape circle;

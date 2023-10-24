@@ -6,7 +6,7 @@
 #define HEIGHT 1000
 #define WIDTH 1000
 
-void test()
+void test1()
 {
     Box b(HEIGHT, WIDTH); 
     Particle a1(HEIGHT, WIDTH);
@@ -17,8 +17,45 @@ void test()
     a2.y = 102;
     b.particleList.push_back(&a1);
     b.particleList.push_back(&a2);
-    b.dbgMap();
     b.collisionUpdate();
+    b.dbgMap();
+}
+
+void test2()
+{
+    Box b(HEIGHT, WIDTH);
+    for(int i = 0; i < 50; i++)
+    {
+        Particle *p = new Particle(HEIGHT, WIDTH);
+        b.particleList.push_back(p);
+    }
+
+    sf::RenderWindow window(sf::VideoMode(HEIGHT, WIDTH), "Particles");
+    window.setFramerateLimit(60);
+    //window.setVerticalSyncEnabled(1);
+    while (window.isOpen())
+    {
+        window.clear();
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            
+            if (event.type == sf::Event::Closed)
+                window.close();
+            
+        }
+
+        for(auto p : b.particleList)
+        {
+            p->updatePosition();
+        }
+        for(auto p : b.particleList)
+        {
+            p->drawToScreen(window);
+        }
+
+        window.display();
+    }  
 }
 
 
@@ -52,6 +89,6 @@ void loop()
 int main(){
 
     srand (time(NULL));
-    test();
+    test2();
     return 0;
 }

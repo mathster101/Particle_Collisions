@@ -99,19 +99,50 @@ void Box::collisionUpdate()
         updateGridmap(p);
     }
 
+    std::set<Particle*> alreadyHandled;
+
     for(auto p : particleList)
     {
+
+        //skip if physics already taken care of
+        if(alreadyHandled.find(p) != alreadyHandled.end())
+            continue;
+        
         auto myLoc = getGridcoord(p->x, p->y);
         auto neighbors = getGridnbrs(myLoc.first, myLoc.second);
         for(auto nbr : neighbors)
         {
-            if(nbr == p)
+            //skip if this is current elem or an elem handled already
+            if(nbr == p || alreadyHandled.find(nbr) != alreadyHandled.end())
                 continue;
+
             float distance = pow((nbr->x - p->x), 2) + pow((nbr->y - p->y), 2);
             distance = pow(distance, 0.5);
             if(distance <= (nbr->radius + p->radius))
             {
+                //collision case
                 std::cout<<"Collision!!!\n";
+                //elastic collision physics
+                int m1 = p->mass;
+                int vx1 = p->vx;
+                int vy1 = p->vy;
+
+                int m2 = nbr->mass;
+                int vx2 = nbr->vx;
+                int vy2 = nbr->vy;
+
+                float alpha, beta, gamma;
+                alpha = 2 * m1 / (m1 + m2);
+                beta = (m1 - m2) / (m1 + m2);
+                gamma = 2 * m2 * (m1 + m2);
+
+                //new velocities
+                p->vx = beta * vx1 + gamma * vx2;
+                p->vy = beta * vy1 + gamma * vy2;
+                nbr->vx = alpha * vx1 - beta * vx2;
+                nbr->vy = alpha * vy1 - beta * vy2;
+                
+                alreadyHandled.insert(nbr);
             }
         }
     }
