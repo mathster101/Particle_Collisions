@@ -1,5 +1,6 @@
 #include "../include/particles.h"
 #include<iostream>
+#include<cstdio>
 
 Particle::Particle(int screen_height, int screen_width)
 {
@@ -121,20 +122,20 @@ void Box::collisionUpdate()
             if(distance <= (nbr->radius + p->radius))
             {
                 //collision case
-                std::cout<<"Collision!!!\n";
+                //std::cout<<"Collision!!!\n";
                 //elastic collision physics
-                int m1 = p->mass;
+                float m1 = p->mass;
                 int vx1 = p->vx;
                 int vy1 = p->vy;
 
-                int m2 = nbr->mass;
+                float m2 = nbr->mass;
                 int vx2 = nbr->vx;
                 int vy2 = nbr->vy;
 
                 float alpha, beta, gamma;
                 alpha = 2 * m1 / (m1 + m2);
                 beta = (m1 - m2) / (m1 + m2);
-                gamma = 2 * m2 * (m1 + m2);
+                gamma = 2 * m2 / (m1 + m2);
 
                 //new velocities
                 p->vx = beta * vx1 + gamma * vx2;
@@ -142,7 +143,11 @@ void Box::collisionUpdate()
                 nbr->vx = alpha * vx1 - beta * vx2;
                 nbr->vy = alpha * vy1 - beta * vy2;
                 
+                printf("_________________________\n");
+                printf("%f %f %f\n",alpha, beta, gamma);
+                printf("%f %f %f %f\n",p->vx, p->vy, nbr->vx, nbr->vy);
                 alreadyHandled.insert(nbr);
+                //alreadyHandled.insert(p);
             }
         }
     }

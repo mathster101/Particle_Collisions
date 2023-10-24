@@ -24,7 +24,7 @@ void test1()
 void test2()
 {
     Box b(HEIGHT, WIDTH);
-    for(int i = 0; i < 50; i++)
+    for(int i = 0; i < 3; i++)
     {
         Particle *p = new Particle(HEIGHT, WIDTH);
         b.particleList.push_back(p);
@@ -53,7 +53,7 @@ void test2()
         {
             p->drawToScreen(window);
         }
-
+        b.collisionUpdate();
         window.display();
     }  
 }
