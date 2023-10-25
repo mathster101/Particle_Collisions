@@ -92,9 +92,28 @@ std::pair<int, int> Box::getGridcoord(int x, int y)
 void Box::updateGridmap(Particle* p)
 {
     std::pair<int, int> coords = getGridcoord(p->x, p->y);
-    if(gridMap.find(coords) == gridMap.end())
-        gridMap[coords] = {};
-    gridMap[coords].push_back(p);
+
+    std::vector<std::pair<int, int>> boxes= {
+        coords,
+        std::pair<int, int> (coords.first + 1, coords.second),
+        std::pair<int, int> (coords.first - 1, coords.second),
+        std::pair<int, int> (coords.first, coords.second + 1),
+        std::pair<int, int> (coords.first, coords.second - 1)
+        
+    };
+
+    for(auto box : boxes)
+    {
+        if(box.first >= 0 && box.first <= GRIDSEG && box.second >= 0 && box.second <= GRIDSEG)
+        {
+            if(gridMap.find(box) == gridMap.end())
+                gridMap[box] = {};
+            gridMap[box].push_back(p);
+        }
+    }    
+    // if(gridMap.find(coords) == gridMap.end())
+    //     gridMap[coords] = {};
+    // gridMap[coords].push_back(p);
 }
 
 std::vector<Particle*> Box::getGridnbrs(int x, int y)
