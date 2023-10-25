@@ -6,14 +6,14 @@
 #include<cmath>
 
 
-#define GRIDSEG 5
+#define GRIDSEG 3
 #define DENSITY 0.1
 
 
 class Particle{
 public:
     Particle(int screen_height, int screen_width);
-    void updatePosition();
+    void updatePosition(float dt);
     void drawToScreen(sf::RenderWindow &window);
     float x,y;
     float vx,vy;

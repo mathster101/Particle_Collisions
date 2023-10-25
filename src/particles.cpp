@@ -6,9 +6,9 @@ Particle::Particle(int screen_height, int screen_width)
 {
     x = rand()%screen_width;
     y = rand()%screen_height;
-    vx = -6 + rand()%12;
-    vy = -6 + rand()%12; 
-    radius = 15 + rand()%15;
+    vx = -150 + rand()%300;
+    vy = -150 + rand()%300; 
+    radius = 5 + rand()%5;
     mass = pow(radius, 3) * DENSITY;
 
     box_h = screen_height;
@@ -19,10 +19,10 @@ Particle::Particle(int screen_height, int screen_width)
     //std::cout<<x<<" "<<y<<"\n";
 }
 
-void Particle::updatePosition()
+void Particle::updatePosition(float dt)
 {
-    float x_new = x + vx;
-    float y_new = y + vy;
+    float x_new = x + vx * dt;
+    float y_new = y + vy * dt;
 
     //wall checks
     if(x_new > box_w)
@@ -91,7 +91,7 @@ std::pair<int, int> Box::getGridcoord(int x, int y)
 
 void Box::updateGridmap(Particle* p)
 {
-    auto coords = getGridcoord(p->x, p->y);
+    std::pair<int, int> coords = getGridcoord(p->x, p->y);
     if(gridMap.find(coords) == gridMap.end())
         gridMap[coords] = {};
     gridMap[coords].push_back(p);
@@ -132,6 +132,23 @@ void Box::collisionUpdate()
 
             if(distanceCalc(p, nbr) <= (nbr->radius + p->radius))
             {
+
+                int iter = 0;
+                while(distanceCalc(p, nbr) <= (nbr->radius + p->radius))
+                {
+                    ++iter;
+                    //move both particles out of each other in small steps
+                    p->x -= 0.01*p->vx;
+                    p->y -= 0.01*p->vy;
+
+                    nbr->x -= 0.01*nbr->vx;
+                    nbr->y -= 0.01*nbr->vy;
+
+                    //std::cout<<"fixer "<<iter<<"\n";
+
+                }
+
+
                 //elastic collision physics
                 float m1 = p->mass;
                 float vx1 = p->vx;
@@ -154,16 +171,16 @@ void Box::collisionUpdate()
                 nbr->vx = coeffRestit * (alpha * vx1 - beta * vx2);
                 nbr->vy = coeffRestit * (alpha * vy1 - beta * vy2);
 
-                while(distanceCalc(p, nbr) <= (nbr->radius + p->radius))
-                {
-                    //move both particles out of each other in small steps
-                    p->x += 0.01*p->vx;
-                    p->y += 0.01*p->vy;
+                // while(distanceCalc(p, nbr) <= (nbr->radius + p->radius))
+                // {
+                //     //move both particles out of each other in small steps
+                //     p->x += 0.01*p->vx;
+                //     p->y += 0.01*p->vy;
 
-                    nbr->x += 0.01*nbr->vx;
-                    nbr->y += 0.01*nbr->vy;
+                //     nbr->x += 0.01*nbr->vx;
+                //     nbr->y += 0.01*nbr->vy;
 
-                }
+                // }
                 alreadyHandled.insert(nbr);
                 alreadyHandled.insert(p);
                 //break;
