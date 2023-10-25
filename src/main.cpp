@@ -3,8 +3,8 @@
 #include<time.h>
 #include<iostream>
 
-#define HEIGHT 1000
-#define WIDTH 1000
+#define HEIGHT 1500
+#define WIDTH 1500
 
 void test1()
 {
@@ -24,14 +24,14 @@ void test1()
 void test2()
 {
     Box b(HEIGHT, WIDTH);
-    for(int i = 0; i < 100; i++)
+    for(int i = 0; i < 200; i++)
     {
         Particle *p = new Particle(HEIGHT, WIDTH);
         b.particleList.push_back(p);
     }
-
+    b.particleList[0]->circle.setFillColor(sf::Color(100, 250, 50));
     sf::RenderWindow window(sf::VideoMode(HEIGHT, WIDTH), "Particles");
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(75);
     //window.setVerticalSyncEnabled(1);
     while (window.isOpen())
     {
@@ -60,31 +60,31 @@ void test2()
 }
 
 
-void loop()
-{
-    Particle p(HEIGHT, WIDTH);
-    sf::RenderWindow window(sf::VideoMode(HEIGHT, WIDTH), "Particles");
-    window.setFramerateLimit(60);
-    //window.setVerticalSyncEnabled(1);
-    while (window.isOpen())
-    {
-        window.clear();
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
+// void loop()
+// {
+//     Particle p(HEIGHT, WIDTH);
+//     sf::RenderWindow window(sf::VideoMode(HEIGHT, WIDTH), "Particles");
+//     window.setFramerateLimit(60);
+//     //window.setVerticalSyncEnabled(1);
+//     while (window.isOpen())
+//     {
+//         window.clear();
+//         sf::Event event;
+//         while (window.pollEvent(event))
+//         {
             
-            if (event.type == sf::Event::Closed)
-                window.close();
+//             if (event.type == sf::Event::Closed)
+//                 window.close();
             
-        }
+//         }
 
-        p.updatePosition();
-        p.drawToScreen(window);
+//         p.updatePosition();
+//         p.drawToScreen(window);
 
 
-        window.display();
-    }    
-}
+//         window.display();
+//     }    
+// }
 
 
 int main(){

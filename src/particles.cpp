@@ -8,7 +8,7 @@ Particle::Particle(int screen_height, int screen_width)
     y = rand()%screen_height;
     vx = -6 + rand()%12;
     vy = -6 + rand()%12; 
-    radius = 10 + rand()%20;
+    radius = 15 + rand()%15;
     mass = pow(radius, 3) * DENSITY;
 
     box_h = screen_height;
@@ -146,11 +146,13 @@ void Box::collisionUpdate()
                 beta = (m1 - m2) / (m1 + m2);
                 gamma = 2 * m2 / (m1 + m2);
 
+
+                float coeffRestit = 1;
                 //new velocities
-                p->vx = beta * vx1 + gamma * vx2;
-                p->vy = beta * vy1 + gamma * vy2;
-                nbr->vx = alpha * vx1 - beta * vx2;
-                nbr->vy = alpha * vy1 - beta * vy2;
+                p->vx = coeffRestit * (beta * vx1 + gamma * vx2);
+                p->vy = coeffRestit * (beta * vy1 + gamma * vy2);
+                nbr->vx = coeffRestit * (alpha * vx1 - beta * vx2);
+                nbr->vy = coeffRestit * (alpha * vy1 - beta * vy2);
 
                 while(distanceCalc(p, nbr) <= (nbr->radius + p->radius))
                 {

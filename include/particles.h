@@ -20,7 +20,7 @@ public:
     float box_w, box_h;
     int radius;
     int mass;
-private:
+//private:
 
     sf::CircleShape circle;
 };
