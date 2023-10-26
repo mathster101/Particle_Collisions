@@ -65,7 +65,7 @@ float distanceCalc(Particle *p, Particle *nbr)
     // return pow(d + 0.1, 0.5);
 
     sf::Vector2f difference = p->pos - nbr->pos;
-    return pow(difference.x, 2) + pow(difference.y, 2);
+    return pow(pow(difference.x, 2) + pow(difference.y, 2), 0.5);
 }
 
 float keCalc(Particle *p)
@@ -88,13 +88,31 @@ std::pair<int, int> Box::getGridcoord(sf::Vector2f position)
 
     int xCoord = position.x/segSizew;
     int yCoord = position.y/segSizew;
-
+    //std::cout<<xCoord<<" "<<yCoord<<"\n";
     return std::pair<int, int>(xCoord, yCoord);
 }
 
 void Box::updateGridmap(Particle* p)
 {
     std::pair<int, int> coords = getGridcoord(p->pos);
+
+    std::vector<std::pair<int, int>> nbrs = {
+        coords,
+        {coords.first + 1, coords.second},
+        {coords.first - 1, coords.second},
+        {coords.first, coords.second + 1},
+        {coords.first, coords.second - 1}       
+    };
+
+    for(auto &nbr : nbrs)
+    {
+        if(nbr.first >= 0 && nbr.first <= GRIDSEG && nbr.second >= 0 && nbr.second <= GRIDSEG)
+        {
+            if(gridMap.find(nbr) == gridMap.end())
+                gridMap[nbr] = {};
+            gridMap[nbr].push_back(p);            
+        }
+    }
     if(gridMap.find(coords) == gridMap.end())
         gridMap[coords] = {};
     gridMap[coords].push_back(p);
@@ -135,7 +153,6 @@ void Box::collisionUpdate()
 
             if(distanceCalc(p, nbr) <= (nbr->radius + p->radius))
             {
-
                 int iter = 0;
                 while(distanceCalc(p, nbr) <= (nbr->radius + p->radius))
                 {
@@ -144,7 +161,8 @@ void Box::collisionUpdate()
                     p->pos -= 0.01f*p->vel;
                     nbr->pos -= 0.01f*nbr->vel;
 
-                    //std::cout<<"fixer "<<iter<<"\n";
+                    if(iter > 5)
+                        std::cout<<"fixer "<<iter<<"\n";
 
                 }
 
@@ -159,9 +177,10 @@ void Box::collisionUpdate()
                 gamma = 2 * m2 / (m1 + m2);
 
                 //new velocities
-                p->vel = DAMPING * (beta * p->vel + gamma * nbr->vel);
-                nbr->vel = DAMPING * (alpha * p->vel - beta * nbr->vel);
-
+                auto newNbrVel = DAMPING * ((alpha * p->vel) - (beta * nbr->vel));                
+                auto newMyVel = DAMPING * ((beta * p->vel) + (gamma * nbr->vel));
+                p->vel = newMyVel;
+                nbr->vel = newNbrVel;
                 // while(distanceCalc(p, nbr) <= (nbr->radius + p->radius))
                 // {
                 //     //move both particles out of each other in small steps

@@ -6,8 +6,8 @@
 #define HEIGHT 1600
 #define WIDTH 1600
 #define FPS 60
-#define PARTCOUNT 20
-
+#define PARTCOUNT 50
+#define SUBSTEPS 1
 void test2()
 {
     Box b(HEIGHT, WIDTH);
@@ -32,15 +32,20 @@ void test2()
             
         }
 
-        for(auto p : b.particleList)
+        for(int ss = 0; ss < SUBSTEPS; ss++)
         {
-            p->updatePosition(1.0/FPS);
+            for(auto p : b.particleList)
+            {
+                p->updatePosition((1.0/FPS)/SUBSTEPS);
+            }
+            b.collisionUpdate();
         }
+        //b.dbgMap();
         for(auto p : b.particleList)
         {
             p->drawToScreen(window);
         }
-        b.collisionUpdate();
+        
         //b.calcKinetic();
         window.display();
     }  
@@ -71,7 +76,7 @@ void test3()
 
     p = new Particle(HEIGHT, WIDTH);
     p->pos = sf::Vector2f(280,100);
-    p->vel.x = 200;
+    p->vel.x = 0;
     p->vel.y = 0;
     p->radius = 25;
     p->mass = 100;
@@ -98,11 +103,12 @@ void test3()
         {
             p->updatePosition(1.0F/FPS);
         }
+        b.collisionUpdate();
         for(auto p : b.particleList)
         {
             p->drawToScreen(window);
         }
-        b.collisionUpdate();
+        
         //b.calcKinetic();
         window.display();
     }     
