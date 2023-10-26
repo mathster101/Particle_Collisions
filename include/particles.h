@@ -8,16 +8,16 @@
 
 #define GRIDSEG 3
 #define DENSITY 0.1
-#define DAMPING 1
+#define DAMPING 1.0f
 
 class Particle{
 public:
     Particle(int screen_height, int screen_width);
     void updatePosition(float dt);
     void drawToScreen(sf::RenderWindow &window);
-    float x,y;
-    float vx,vy;
-    float ax,ay;
+    sf::Vector2f pos;
+    sf::Vector2f vel;
+    sf::Vector2f accel;
     float box_w, box_h;
     int radius;
     int mass;
@@ -27,7 +27,7 @@ public:
 class Box{
 public:
     Box(int screen_height, int screen_width);
-    std::pair<int, int> getGridcoord(int x, int y);
+    std::pair<int, int> getGridcoord(sf::Vector2f position);
     void updateGridmap(Particle* p);
     std::vector<Particle*> getGridnbrs(int x, int y);
     void collisionUpdate();

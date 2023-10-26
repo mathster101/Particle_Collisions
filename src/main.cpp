@@ -6,22 +6,7 @@
 #define HEIGHT 1600
 #define WIDTH 1600
 #define FPS 60
-#define PARTCOUNT 800
-
-void test1()
-{
-    Box b(HEIGHT, WIDTH); 
-    Particle a1(HEIGHT, WIDTH);
-    Particle a2(HEIGHT, WIDTH);
-    a1.x = 100;
-    a1.y = 100;
-    a2.x = 101;
-    a2.y = 102;
-    b.particleList.push_back(&a1);
-    b.particleList.push_back(&a2);
-    b.collisionUpdate();
-    b.dbgMap();
-}
+#define PARTCOUNT 20
 
 void test2()
 {
@@ -66,10 +51,9 @@ void test3()
     Box b(HEIGHT, WIDTH);
 
     Particle *p = new Particle(HEIGHT, WIDTH);
-    p->x = 100;
-    p->y = 100;
-    p->vx = 200;
-    p->vy = 0;
+    p->pos = sf::Vector2f(100,100);
+    p->vel.x = 200;
+    p->vel.y = 0;
     p->radius = 25;
     p->mass = 100;
     p->circle = sf::CircleShape(p->radius);
@@ -86,12 +70,11 @@ void test3()
     // b.particleList.push_back(p);
 
     p = new Particle(HEIGHT, WIDTH);
-    p->x = 280;
-    p->y = 100;
-    p->vx = -100;
-    p->vy = 0;
+    p->pos = sf::Vector2f(280,100);
+    p->vel.x = 200;
+    p->vel.y = 0;
     p->radius = 25;
-    p->mass = 50;
+    p->mass = 100;
     p->circle = sf::CircleShape(p->radius);
     b.particleList.push_back(p);
 

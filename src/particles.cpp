@@ -4,13 +4,13 @@
 
 Particle::Particle(int screen_height, int screen_width)
 {
-    x = rand()%screen_width;
-    y = rand()%screen_height;
-    vx = -150 + rand()%300;
-    vy = -150 + rand()%300;
-    ax = ay = 0;
+    pos.x = rand()%screen_width;
+    pos.y = rand()%screen_height;
+    vel.x = -150 + rand()%300;
+    vel.y = -150 + rand()%300;
+    accel.x = accel.y = 0;
     //ax = -200; 
-    radius = 5 + rand()%5;
+    radius = 25 + rand()%5;
     mass = pow(radius, 3) * DENSITY;
 
     box_h = screen_height;
@@ -23,40 +23,37 @@ Particle::Particle(int screen_height, int screen_width)
 
 void Particle::updatePosition(float dt)
 {
-    vx += ax*dt;
-    vy += ay*dt;
-    float x_new = x + vx * dt;
-    float y_new = y + vy * dt;
-
+    vel.x += accel.x*dt;
+    vel.y += accel.y*dt;
+    sf::Vector2f posNew = pos + vel*dt;
     //wall checks
-    if(x_new < 0)
+    if(posNew.x < 0)
     {
-        vx = -1 * vx * DAMPING;
-        x_new *= -1;
+        vel.x = -1 * vel.x * DAMPING;
+        posNew.x *= -1;
     }
-    if(y_new < 0)
+    if(posNew.y < 0)
     {
-        vy = -1 * vy * DAMPING;
-        y_new *= -1;
+        vel.y = -1 * vel.y * DAMPING;
+        posNew.y *= -1;
     }
-    if(x_new > box_w)
+    if(posNew.x > box_w)
     {
-        vx = -1 * vx * DAMPING;
-        x_new = box_w - (x_new - box_w);
+        vel.x = -1 * vel.x * DAMPING;
+        posNew.x = box_w - (posNew.x - box_w);
     }
-    if(y_new > box_h)
+    if(posNew.y > box_h)
     {
-        vy = -1 * vy * DAMPING;
-        y_new = box_h - (y_new - box_h);
+        vel.y = -1 * vel.y * DAMPING;
+        posNew.y = box_h - (posNew.y - box_h);
     }
-    x = x_new;
-    y = y_new;
+    pos = posNew;
 
 }
 
 void Particle::drawToScreen(sf::RenderWindow &window)
 {
-    circle.setPosition((int)x, (int)y);
+    circle.setPosition(pos);
     window.draw(circle);
 }
 
@@ -64,13 +61,16 @@ void Particle::drawToScreen(sf::RenderWindow &window)
 
 float distanceCalc(Particle *p, Particle *nbr)
 {
-    float d = pow((nbr->x - p->x), 2) + pow((nbr->y - p->y), 2);
-    return pow(d + 0.1, 0.5);
+    // float d = pow((nbr->x - p->x), 2) + pow((nbr->y - p->y), 2);
+    // return pow(d + 0.1, 0.5);
+
+    sf::Vector2f difference = p->pos - nbr->pos;
+    return pow(difference.x, 2) + pow(difference.y, 2);
 }
 
 float keCalc(Particle *p)
 {
-    float ke = 0.5 * p->mass * (pow(p->vx, 2) + pow(p->vy, 2));
+    float ke = 0.5 * p->mass * (pow(p->vel.x, 2) + pow(p->vel.y, 2));
     return ke;
 }
 
@@ -80,21 +80,21 @@ Box::Box(int screen_height, int screen_width)
     width = screen_width;
 }
 
-std::pair<int, int> Box::getGridcoord(int x, int y)
+std::pair<int, int> Box::getGridcoord(sf::Vector2f position)
 {
     //maps pixel value to grid box;
     float segSizew = width/GRIDSEG;
     float segSizeh = height/GRIDSEG;
 
-    int xCoord = x/segSizew;
-    int yCoord = y/segSizew;
+    int xCoord = position.x/segSizew;
+    int yCoord = position.y/segSizew;
 
     return std::pair<int, int>(xCoord, yCoord);
 }
 
 void Box::updateGridmap(Particle* p)
 {
-    std::pair<int, int> coords = getGridcoord(p->x, p->y);
+    std::pair<int, int> coords = getGridcoord(p->pos);
     if(gridMap.find(coords) == gridMap.end())
         gridMap[coords] = {};
     gridMap[coords].push_back(p);
@@ -124,7 +124,7 @@ void Box::collisionUpdate()
         if(alreadyHandled.find(p) != alreadyHandled.end())
             continue;
         
-        auto myLoc = getGridcoord(p->x, p->y);
+        auto myLoc = getGridcoord(p->pos);
         auto neighbors = getGridnbrs(myLoc.first, myLoc.second);
         for(auto nbr : neighbors)
         {
@@ -141,11 +141,8 @@ void Box::collisionUpdate()
                 {
                     ++iter;
                     //move both particles out of each other in small steps
-                    p->x -= 0.01*p->vx;
-                    p->y -= 0.01*p->vy;
-
-                    nbr->x -= 0.01*nbr->vx;
-                    nbr->y -= 0.01*nbr->vy;
+                    p->pos -= 0.01f*p->vel;
+                    nbr->pos -= 0.01f*nbr->vel;
 
                     //std::cout<<"fixer "<<iter<<"\n";
 
@@ -154,23 +151,16 @@ void Box::collisionUpdate()
 
                 //elastic collision physics
                 float m1 = p->mass;
-                float vx1 = p->vx;
-                float vy1 = p->vy;
-
                 float m2 = nbr->mass;
-                float vx2 = nbr->vx;
-                float vy2 = nbr->vy;
-
                 float alpha, beta, gamma;
+
                 alpha = 2 * m1 / (m1 + m2);
                 beta = (m1 - m2) / (m1 + m2);
                 gamma = 2 * m2 / (m1 + m2);
 
                 //new velocities
-                p->vx = DAMPING * (beta * vx1 + gamma * vx2);
-                p->vy = DAMPING * (beta * vy1 + gamma * vy2);
-                nbr->vx = DAMPING * (alpha * vx1 - beta * vx2);
-                nbr->vy = DAMPING * (alpha * vy1 - beta * vy2);
+                p->vel = DAMPING * (beta * p->vel + gamma * nbr->vel);
+                nbr->vel = DAMPING * (alpha * p->vel - beta * nbr->vel);
 
                 // while(distanceCalc(p, nbr) <= (nbr->radius + p->radius))
                 // {
