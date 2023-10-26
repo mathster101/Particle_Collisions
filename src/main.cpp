@@ -5,7 +5,8 @@
 
 #define HEIGHT 1900
 #define WIDTH 1900
-#define FPS 120
+#define FPS 60
+
 void test1()
 {
     Box b(HEIGHT, WIDTH); 
@@ -83,6 +84,16 @@ void test3()
     p->circle = sf::CircleShape(p->radius);
     b.particleList.push_back(p);
 
+    p = new Particle(HEIGHT, WIDTH);
+    p->x = 280;
+    p->y = 100;
+    p->vx = 30;
+    p->vy = 0;
+    p->radius = 25;
+    p->mass = 50;
+    p->circle = sf::CircleShape(p->radius);
+    b.particleList.push_back(p);
+
     b.particleList[0]->circle.setFillColor(sf::Color(100, 250, 50));
     sf::RenderWindow window(sf::VideoMode(HEIGHT, WIDTH), "Particles");
     window.setFramerateLimit(FPS);
@@ -144,6 +155,6 @@ void test3()
 int main(){
 
     srand (time(NULL));
-    test2();
+    test3();
     return 0;
 }

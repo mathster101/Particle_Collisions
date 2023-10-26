@@ -17,6 +17,7 @@ public:
     void drawToScreen(sf::RenderWindow &window);
     float x,y;
     float vx,vy;
+    float ax,ay;
     float box_w, box_h;
     int radius;
     int mass;

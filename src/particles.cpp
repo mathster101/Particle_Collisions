@@ -7,7 +7,8 @@ Particle::Particle(int screen_height, int screen_width)
     x = rand()%screen_width;
     y = rand()%screen_height;
     vx = -150 + rand()%300;
-    vy = -150 + rand()%300; 
+    vy = -150 + rand()%300;
+    ax = ay = 0; 
     radius = 5 + rand()%5;
     mass = pow(radius, 3) * DENSITY;
 
@@ -21,6 +22,8 @@ Particle::Particle(int screen_height, int screen_width)
 
 void Particle::updatePosition(float dt)
 {
+    vx += ax*dt;
+    vy += ay*dt;
     float x_new = x + vx * dt;
     float y_new = y + vy * dt;
 
