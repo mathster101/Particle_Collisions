@@ -5,8 +5,8 @@
 
 #define HEIGHT 1600
 #define WIDTH 1600
-#define FPS 60
-#define PARTCOUNT 50
+#define FPS 90
+#define PARTCOUNT 30
 #define SUBSTEPS 1
 void test2()
 {

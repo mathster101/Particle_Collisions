@@ -9,8 +9,8 @@ Particle::Particle(int screen_height, int screen_width)
     vel.x = -150 + rand()%300;
     vel.y = -150 + rand()%300;
     accel.x = accel.y = 0;
-    //ax = -200; 
-    radius = 25 + rand()%5;
+    //accel.x = -200; 
+    radius = 25 + rand()%9;
     mass = pow(radius, 3) * DENSITY;
 
     box_h = screen_height;
@@ -161,8 +161,12 @@ void Box::collisionUpdate()
                     p->pos -= 0.01f*p->vel;
                     nbr->pos -= 0.01f*nbr->vel;
 
-                    if(iter > 5)
-                        std::cout<<"fixer "<<iter<<"\n";
+                    // if(iter > 5 && iter < 100)
+                    // {
+                    //     std::cout<<"fixer "<<iter<<"\n";
+                    //     p->circle.setFillColor(sf::Color::Magenta);
+                    //     nbr->circle.setFillColor(sf::Color::Magenta);
+                    // }
 
                 }
 
