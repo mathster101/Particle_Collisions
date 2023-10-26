@@ -3,9 +3,9 @@
 #include<time.h>
 #include<iostream>
 
-#define HEIGHT 1200
-#define WIDTH 1200
-#define FPS 60
+#define HEIGHT 1900
+#define WIDTH 1900
+#define FPS 120
 void test1()
 {
     Box b(HEIGHT, WIDTH); 
@@ -24,7 +24,7 @@ void test1()
 void test2()
 {
     Box b(HEIGHT, WIDTH);
-    for(int i = 0; i < 1000; i++)
+    for(int i = 0; i < 2000; i++)
     {
         Particle *p = new Particle(HEIGHT, WIDTH);
         b.particleList.push_back(p);

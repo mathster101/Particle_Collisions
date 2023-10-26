@@ -6,7 +6,7 @@
 #include<cmath>
 
 
-#define GRIDSEG 10
+#define GRIDSEG 3
 #define DENSITY 0.1
 
 
