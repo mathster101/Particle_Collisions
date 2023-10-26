@@ -8,7 +8,8 @@ Particle::Particle(int screen_height, int screen_width)
     y = rand()%screen_height;
     vx = -150 + rand()%300;
     vy = -150 + rand()%300;
-    ax = ay = 0; 
+    ax = ay = 0;
+    //ax = -200; 
     radius = 5 + rand()%5;
     mass = pow(radius, 3) * DENSITY;
 
@@ -28,27 +29,26 @@ void Particle::updatePosition(float dt)
     float y_new = y + vy * dt;
 
     //wall checks
-    if(x_new > box_w)
-    {
-        vx = -1 * vx;
-        x_new = box_w - (x_new - box_w);
-    }
     if(x_new < 0)
     {
-        vx = -1 * vx;
+        vx = -1 * vx * DAMPING;
         x_new *= -1;
-    }
-    if(y_new > box_h)
-    {
-        vy = -1 * vy;
-        y_new = box_h - (y_new - box_h);
     }
     if(y_new < 0)
     {
-        vy = -1 * vy;
+        vy = -1 * vy * DAMPING;
         y_new *= -1;
     }
-
+    if(x_new > box_w)
+    {
+        vx = -1 * vx * DAMPING;
+        x_new = box_w - (x_new - box_w);
+    }
+    if(y_new > box_h)
+    {
+        vy = -1 * vy * DAMPING;
+        y_new = box_h - (y_new - box_h);
+    }
     x = x_new;
     y = y_new;
 
@@ -166,13 +166,11 @@ void Box::collisionUpdate()
                 beta = (m1 - m2) / (m1 + m2);
                 gamma = 2 * m2 / (m1 + m2);
 
-
-                float coeffRestit = 1;
                 //new velocities
-                p->vx = coeffRestit * (beta * vx1 + gamma * vx2);
-                p->vy = coeffRestit * (beta * vy1 + gamma * vy2);
-                nbr->vx = coeffRestit * (alpha * vx1 - beta * vx2);
-                nbr->vy = coeffRestit * (alpha * vy1 - beta * vy2);
+                p->vx = DAMPING * (beta * vx1 + gamma * vx2);
+                p->vy = DAMPING * (beta * vy1 + gamma * vy2);
+                nbr->vx = DAMPING * (alpha * vx1 - beta * vx2);
+                nbr->vy = DAMPING * (alpha * vy1 - beta * vy2);
 
                 // while(distanceCalc(p, nbr) <= (nbr->radius + p->radius))
                 // {

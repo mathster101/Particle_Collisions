@@ -3,9 +3,10 @@
 #include<time.h>
 #include<iostream>
 
-#define HEIGHT 1900
-#define WIDTH 1900
+#define HEIGHT 1600
+#define WIDTH 1600
 #define FPS 60
+#define PARTCOUNT 800
 
 void test1()
 {
@@ -25,7 +26,7 @@ void test1()
 void test2()
 {
     Box b(HEIGHT, WIDTH);
-    for(int i = 0; i < 2000; i++)
+    for(int i = 0; i < PARTCOUNT; i++)
     {
         Particle *p = new Particle(HEIGHT, WIDTH);
         b.particleList.push_back(p);
@@ -55,7 +56,7 @@ void test2()
             p->drawToScreen(window);
         }
         b.collisionUpdate();
-        b.calcKinetic();
+        //b.calcKinetic();
         window.display();
     }  
 }
@@ -74,20 +75,20 @@ void test3()
     p->circle = sf::CircleShape(p->radius);
     b.particleList.push_back(p);
     
-    p = new Particle(HEIGHT, WIDTH);
-    p->x = 220;
-    p->y = 100;
-    p->vx = 10;
-    p->vy = 0;
-    p->radius = 25;
-    p->mass = 50;
-    p->circle = sf::CircleShape(p->radius);
-    b.particleList.push_back(p);
+    // p = new Particle(HEIGHT, WIDTH);
+    // p->x = 220;
+    // p->y = 100;
+    // p->vx = 10;
+    // p->vy = 0;
+    // p->radius = 25;
+    // p->mass = 50;
+    // p->circle = sf::CircleShape(p->radius);
+    // b.particleList.push_back(p);
 
     p = new Particle(HEIGHT, WIDTH);
     p->x = 280;
     p->y = 100;
-    p->vx = 30;
+    p->vx = -100;
     p->vy = 0;
     p->radius = 25;
     p->mass = 50;
@@ -155,6 +156,6 @@ void test3()
 int main(){
 
     srand (time(NULL));
-    test3();
+    test2();
     return 0;
 }

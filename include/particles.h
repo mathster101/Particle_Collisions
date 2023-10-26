@@ -8,7 +8,7 @@
 
 #define GRIDSEG 3
 #define DENSITY 0.1
-
+#define DAMPING 1
 
 class Particle{
 public:
@@ -21,8 +21,6 @@ public:
     float box_w, box_h;
     int radius;
     int mass;
-//private:
-
     sf::CircleShape circle;
 };
 
