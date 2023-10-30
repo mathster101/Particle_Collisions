@@ -8,7 +8,7 @@
 
 #define GRIDSEG 10
 #define DENSITY 0.1
-#define DAMPING 1.0F
+#define DAMPING 0.80F
 
 class Particle{
 public:
@@ -31,7 +31,7 @@ public:
     std::pair<int, int> getGridcoord(sf::Vector2f position);
     void updateGridmap(Particle* p);
     std::vector<Particle*> getGridnbrs(int x, int y);
-    void collisionUpdate();
+    void collisionUpdate(float dt);
     void calcKinetic();
     void dbgMap();
     std::vector<Particle*> particleList;

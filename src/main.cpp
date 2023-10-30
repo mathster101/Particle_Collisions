@@ -7,7 +7,7 @@
 #define WIDTH 1600
 #define FPS 90
 #define PARTCOUNT 100
-#define SUBSTEPS 10
+#define SUBSTEPS 1
 void test2()
 {
     Box b(HEIGHT, WIDTH);
@@ -38,7 +38,7 @@ void test2()
             {
                 p->updatePosition((1.0/FPS)/SUBSTEPS);
             }
-            b.collisionUpdate();
+            b.collisionUpdate((1.0/FPS)/SUBSTEPS);
         }
         //b.dbgMap();
         for(auto p : b.particleList)
@@ -67,7 +67,7 @@ void test3()
     b.particleList.push_back(p);
     
     p = new Particle(HEIGHT, WIDTH);
-    p->pos = sf::Vector2f(400,100);
+    p->pos = sf::Vector2f(200,100);
     p->id = 2;
     p->vel.x = 0;
     p->vel.y = 0;
@@ -78,7 +78,7 @@ void test3()
     b.particleList.push_back(p);
 
     p = new Particle(HEIGHT, WIDTH);
-    p->pos = sf::Vector2f(280,100);
+    p->pos = sf::Vector2f(400,100);
     p->id = 3;
     p->vel.x = 0;
     p->vel.y = 0;
@@ -109,7 +109,7 @@ void test3()
         {
             p->updatePosition(1.0F/FPS);
         }
-        b.collisionUpdate();
+        b.collisionUpdate(1.0F/FPS);
         for(auto p : b.particleList)
         {
             p->drawToScreen(window);

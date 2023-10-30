@@ -2,6 +2,13 @@
 #include<iostream>
 #include<cstdio>
 
+float magnitude(sf::Vector2f vec)
+{
+    float mag = pow(vec.x, 2) + pow(vec.y, 2);
+    mag = pow(mag, 0.5);
+    return mag;
+}
+
 float distanceCalc(Particle *p, Particle *nbr)
 {
     // float d = pow((nbr->x - p->x), 2) + pow((nbr->y - p->y), 2);
@@ -19,10 +26,7 @@ float keCalc(Particle *p)
 
 sf::Vector2f unitVector(const sf::Vector2f vec)
 {
-    float div = pow(vec.x, 2) + pow(vec.y, 2);
-    div = pow(div, 0.5);
-
-    return vec/((float)div);
+    return vec/magnitude(vec);
 }
 
 
@@ -35,7 +39,7 @@ Particle::Particle(int screen_height, int screen_width)
     vel.x = -150 + rand()%300;
     vel.y = -150 + rand()%300;
     accel.x = accel.y = 0;
-    //accel.x = -300; 
+    accel.x = -300; 
     radius = 20 + rand()%3;
     mass = pow(radius, 3) * DENSITY;
 
@@ -141,7 +145,7 @@ std::vector<Particle*> Box::getGridnbrs(int x, int y)
     
 }
 
-void Box::collisionUpdate()
+void Box::collisionUpdate(float dt)
 {
     gridMap.clear();
     for(auto p : particleList)
@@ -163,34 +167,24 @@ void Box::collisionUpdate()
         for(auto nbr : neighbors)
         {
             //skip if this is current elem or an elem handled already
-            if(nbr == p || alreadyHandled.find(nbr) != alreadyHandled.end())
+            if(nbr == p)
                 continue;
             
 
             if(distanceCalc(p, nbr) <= (nbr->radius + p->radius))
             {
                 int iter = 0;
-                if(distanceCalc(p, nbr) < (nbr->radius + p->radius))
+                float distance = distanceCalc(p, nbr);
+                if(distance < (nbr->radius + p->radius))
                 {
-                    ++iter;
-                    // //move both particles out of each other in small steps
-                    // p->pos -= max(0.01f*p->vel);
-                    // nbr->pos -= (0.01f*nbr->vel);
-                    // printf("ID = %d  iter = %d\n", p->id, iter);
-                    // printf("versus id = %d\n", nbr->id);
-                    // printf("xvel frac = %f\n", 0.01f*p->vel.x);
-                    // printf("velocity = %f %f\n______\n", p->vel.x, p->vel.y);
-                    p->pos = p->pos - (((nbr->radius + p->radius) - distanceCalc(p, nbr) + 0.1F)*unitVector(p->vel)) / 1.8F;
-                    nbr->pos = nbr->pos - (((nbr->radius + p->radius) - distanceCalc(p, nbr) + 0.1F)*unitVector(nbr->vel)) / 1.8F;
-                    //printf("new sep = %f\n", -1*distanceCalc(p, nbr) + (nbr->radius + p->radius));
-                    std::cout<<iter<<"\n";
+                    float intersectAmt = (nbr->radius + p->radius) - distance;
+                    sf::Vector2f intersectDir(nbr->pos.x - p->pos.x, nbr->pos.y - p->pos.y);
+                    intersectDir = intersectAmt * unitVector(intersectDir);
+                    p->pos -= (intersectDir / 1.99F);
+                    nbr->pos += (intersectDir / 1.99F);
+                }
+                //printf("ID:%d --> old = %f   new = %f\n",p->id, distance, distanceCalc(p, nbr));
 
-                }
-                
-                for(auto mlem : particleList)
-                {
-                    updateGridmap(mlem);
-                }
 
 
                 //elastic collision physics
@@ -207,8 +201,8 @@ void Box::collisionUpdate()
                 auto newMyVel = DAMPING * ((beta * p->vel) + (gamma * nbr->vel));
                 p->vel = newMyVel;
                 nbr->vel = newNbrVel;
-                alreadyHandled.insert(nbr);
-                alreadyHandled.insert(p);
+                //alreadyHandled.insert(nbr);
+                //alreadyHandled.insert(p);
                 //break;
             }
         }
