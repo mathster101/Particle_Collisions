@@ -9,8 +9,8 @@ Particle::Particle(int screen_height, int screen_width)
     vel.x = -150 + rand()%300;
     vel.y = -150 + rand()%300;
     accel.x = accel.y = 0;
-    //accel.x = -200; 
-    radius = 25 + rand()%9;
+    accel.x = -300; 
+    radius = 20 + rand()%3;
     mass = pow(radius, 3) * DENSITY;
 
     box_h = screen_height;

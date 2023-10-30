@@ -6,7 +6,7 @@
 #define HEIGHT 1600
 #define WIDTH 1600
 #define FPS 90
-#define PARTCOUNT 30
+#define PARTCOUNT 100
 #define SUBSTEPS 1
 void test2()
 {
@@ -64,15 +64,14 @@ void test3()
     p->circle = sf::CircleShape(p->radius);
     b.particleList.push_back(p);
     
-    // p = new Particle(HEIGHT, WIDTH);
-    // p->x = 220;
-    // p->y = 100;
-    // p->vx = 10;
-    // p->vy = 0;
-    // p->radius = 25;
-    // p->mass = 50;
-    // p->circle = sf::CircleShape(p->radius);
-    // b.particleList.push_back(p);
+    p = new Particle(HEIGHT, WIDTH);
+    p->pos = sf::Vector2f(400,100);
+    p->vel.x = 0;
+    p->vel.y = 0;
+    p->radius = 25;
+    p->mass = 100;
+    p->circle = sf::CircleShape(p->radius);
+    b.particleList.push_back(p);
 
     p = new Particle(HEIGHT, WIDTH);
     p->pos = sf::Vector2f(280,100);
@@ -83,7 +82,8 @@ void test3()
     p->circle = sf::CircleShape(p->radius);
     b.particleList.push_back(p);
 
-    b.particleList[0]->circle.setFillColor(sf::Color(100, 250, 50));
+    b.particleList[0]->circle.setFillColor(sf::Color::Green);
+    b.particleList[1]->circle.setFillColor(sf::Color::Magenta);
     sf::RenderWindow window(sf::VideoMode(HEIGHT, WIDTH), "Particles");
     window.setFramerateLimit(FPS);
     //window.setVerticalSyncEnabled(1);
@@ -145,6 +145,6 @@ void test3()
 int main(){
 
     srand (time(NULL));
-    test2();
+    test3();
     return 0;
 }

@@ -6,9 +6,9 @@
 #include<cmath>
 
 
-#define GRIDSEG 7
+#define GRIDSEG 10
 #define DENSITY 0.1
-#define DAMPING 1.0f
+#define DAMPING 0.8F//1.0f
 
 class Particle{
 public:
