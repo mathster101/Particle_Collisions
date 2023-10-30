@@ -2,6 +2,23 @@
 #include<iostream>
 #include<cstdio>
 
+float distanceCalc(Particle *p, Particle *nbr)
+{
+    // float d = pow((nbr->x - p->x), 2) + pow((nbr->y - p->y), 2);
+    // return pow(d + 0.1, 0.5);
+
+    sf::Vector2f difference = p->pos - nbr->pos;
+    return pow(pow(difference.x, 2) + pow(difference.y, 2), 0.5);
+}
+
+float keCalc(Particle *p)
+{
+    float ke = 0.5 * p->mass * (pow(p->vel.x, 2) + pow(p->vel.y, 2));
+    return ke;
+}
+
+/********************************************************************/
+
 Particle::Particle(int screen_height, int screen_width)
 {
     pos.x = rand()%screen_width;
@@ -58,21 +75,6 @@ void Particle::drawToScreen(sf::RenderWindow &window)
 }
 
 /********************************************************************/
-
-float distanceCalc(Particle *p, Particle *nbr)
-{
-    // float d = pow((nbr->x - p->x), 2) + pow((nbr->y - p->y), 2);
-    // return pow(d + 0.1, 0.5);
-
-    sf::Vector2f difference = p->pos - nbr->pos;
-    return pow(pow(difference.x, 2) + pow(difference.y, 2), 0.5);
-}
-
-float keCalc(Particle *p)
-{
-    float ke = 0.5 * p->mass * (pow(p->vel.x, 2) + pow(p->vel.y, 2));
-    return ke;
-}
 
 Box::Box(int screen_height, int screen_width)
 {
@@ -160,14 +162,11 @@ void Box::collisionUpdate()
                     //move both particles out of each other in small steps
                     p->pos -= 0.01f*p->vel;
                     nbr->pos -= 0.01f*nbr->vel;
-
-                    // if(iter > 5 && iter < 100)
-                    // {
-                    //     std::cout<<"fixer "<<iter<<"\n";
-                    //     p->circle.setFillColor(sf::Color::Magenta);
-                    //     nbr->circle.setFillColor(sf::Color::Magenta);
-                    // }
-
+                }
+                
+                for(auto p : particleList)
+                {
+                    updateGridmap(p);
                 }
 
 
@@ -185,16 +184,6 @@ void Box::collisionUpdate()
                 auto newMyVel = DAMPING * ((beta * p->vel) + (gamma * nbr->vel));
                 p->vel = newMyVel;
                 nbr->vel = newNbrVel;
-                // while(distanceCalc(p, nbr) <= (nbr->radius + p->radius))
-                // {
-                //     //move both particles out of each other in small steps
-                //     p->x += 0.01*p->vx;
-                //     p->y += 0.01*p->vy;
-
-                //     nbr->x += 0.01*nbr->vx;
-                //     nbr->y += 0.01*nbr->vy;
-
-                // }
                 alreadyHandled.insert(nbr);
                 alreadyHandled.insert(p);
                 //break;
