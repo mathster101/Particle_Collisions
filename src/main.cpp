@@ -7,7 +7,7 @@
 #define WIDTH 1600
 #define FPS 90
 #define PARTCOUNT 100
-#define SUBSTEPS 1
+#define SUBSTEPS 10
 void test2()
 {
     Box b(HEIGHT, WIDTH);
@@ -57,29 +57,35 @@ void test3()
 
     Particle *p = new Particle(HEIGHT, WIDTH);
     p->pos = sf::Vector2f(100,100);
+    p->id = 1;
     p->vel.x = 200;
     p->vel.y = 0;
     p->radius = 25;
     p->mass = 100;
     p->circle = sf::CircleShape(p->radius);
+    p->circle.setOrigin(p->radius, p->radius);
     b.particleList.push_back(p);
     
     p = new Particle(HEIGHT, WIDTH);
     p->pos = sf::Vector2f(400,100);
+    p->id = 2;
     p->vel.x = 0;
     p->vel.y = 0;
     p->radius = 25;
     p->mass = 100;
     p->circle = sf::CircleShape(p->radius);
+    p->circle.setOrigin(p->radius, p->radius);
     b.particleList.push_back(p);
 
     p = new Particle(HEIGHT, WIDTH);
     p->pos = sf::Vector2f(280,100);
+    p->id = 3;
     p->vel.x = 0;
     p->vel.y = 0;
     p->radius = 25;
     p->mass = 100;
     p->circle = sf::CircleShape(p->radius);
+    p->circle.setOrigin(p->radius, p->radius);
     b.particleList.push_back(p);
 
     b.particleList[0]->circle.setFillColor(sf::Color::Green);
@@ -115,36 +121,9 @@ void test3()
 }
 
 
-// void loop()
-// {
-//     Particle p(HEIGHT, WIDTH);
-//     sf::RenderWindow window(sf::VideoMode(HEIGHT, WIDTH), "Particles");
-//     window.setFramerateLimit(60);
-//     //window.setVerticalSyncEnabled(1);
-//     while (window.isOpen())
-//     {
-//         window.clear();
-//         sf::Event event;
-//         while (window.pollEvent(event))
-//         {
-            
-//             if (event.type == sf::Event::Closed)
-//                 window.close();
-            
-//         }
-
-//         p.updatePosition();
-//         p.drawToScreen(window);
-
-
-//         window.display();
-//     }    
-// }
-
-
 int main(){
 
     srand (time(NULL));
-    test3();
+    test2();
     return 0;
 }

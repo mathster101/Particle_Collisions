@@ -8,13 +8,14 @@
 
 #define GRIDSEG 10
 #define DENSITY 0.1
-#define DAMPING 0.8F//1.0f
+#define DAMPING 1.0F
 
 class Particle{
 public:
     Particle(int screen_height, int screen_width);
     void updatePosition(float dt);
     void drawToScreen(sf::RenderWindow &window);
+    int id;
     sf::Vector2f pos;
     sf::Vector2f vel;
     sf::Vector2f accel;

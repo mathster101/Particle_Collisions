@@ -8,7 +8,7 @@ float distanceCalc(Particle *p, Particle *nbr)
     // return pow(d + 0.1, 0.5);
 
     sf::Vector2f difference = p->pos - nbr->pos;
-    return pow(pow(difference.x, 2) + pow(difference.y, 2), 0.5);
+    return (float)pow(pow(difference.x, 2) + pow(difference.y, 2), 0.5);
 }
 
 float keCalc(Particle *p)
@@ -16,6 +16,15 @@ float keCalc(Particle *p)
     float ke = 0.5 * p->mass * (pow(p->vel.x, 2) + pow(p->vel.y, 2));
     return ke;
 }
+
+sf::Vector2f unitVector(const sf::Vector2f vec)
+{
+    float div = pow(vec.x, 2) + pow(vec.y, 2);
+    div = pow(div, 0.5);
+
+    return vec/((float)div);
+}
+
 
 /********************************************************************/
 
@@ -26,7 +35,7 @@ Particle::Particle(int screen_height, int screen_width)
     vel.x = -150 + rand()%300;
     vel.y = -150 + rand()%300;
     accel.x = accel.y = 0;
-    accel.x = -300; 
+    //accel.x = -300; 
     radius = 20 + rand()%3;
     mass = pow(radius, 3) * DENSITY;
 
@@ -34,6 +43,7 @@ Particle::Particle(int screen_height, int screen_width)
     box_w = screen_width;
 
     circle = sf::CircleShape(radius);//need to set color
+    circle.setOrigin(radius, radius);
 
     //std::cout<<x<<" "<<y<<"\n";
 }
@@ -103,7 +113,11 @@ void Box::updateGridmap(Particle* p)
         {coords.first + 1, coords.second},
         {coords.first - 1, coords.second},
         {coords.first, coords.second + 1},
-        {coords.first, coords.second - 1}       
+        {coords.first, coords.second - 1},
+        {coords.first + 1, coords.second + 1},
+        {coords.first - 1, coords.second + 1},
+        {coords.first + 1, coords.second - 1},
+        {coords.first - 1, coords.second - 1} 
     };
 
     for(auto &nbr : nbrs)
@@ -156,17 +170,26 @@ void Box::collisionUpdate()
             if(distanceCalc(p, nbr) <= (nbr->radius + p->radius))
             {
                 int iter = 0;
-                while(distanceCalc(p, nbr) <= (nbr->radius + p->radius))
+                if(distanceCalc(p, nbr) < (nbr->radius + p->radius))
                 {
                     ++iter;
-                    //move both particles out of each other in small steps
-                    p->pos -= 0.01f*p->vel;
-                    nbr->pos -= 0.01f*nbr->vel;
+                    // //move both particles out of each other in small steps
+                    // p->pos -= max(0.01f*p->vel);
+                    // nbr->pos -= (0.01f*nbr->vel);
+                    // printf("ID = %d  iter = %d\n", p->id, iter);
+                    // printf("versus id = %d\n", nbr->id);
+                    // printf("xvel frac = %f\n", 0.01f*p->vel.x);
+                    // printf("velocity = %f %f\n______\n", p->vel.x, p->vel.y);
+                    p->pos = p->pos - (((nbr->radius + p->radius) - distanceCalc(p, nbr) + 0.1F)*unitVector(p->vel)) / 1.8F;
+                    nbr->pos = nbr->pos - (((nbr->radius + p->radius) - distanceCalc(p, nbr) + 0.1F)*unitVector(nbr->vel)) / 1.8F;
+                    //printf("new sep = %f\n", -1*distanceCalc(p, nbr) + (nbr->radius + p->radius));
+                    std::cout<<iter<<"\n";
+
                 }
                 
-                for(auto p : particleList)
+                for(auto mlem : particleList)
                 {
-                    updateGridmap(p);
+                    updateGridmap(mlem);
                 }
 
 
