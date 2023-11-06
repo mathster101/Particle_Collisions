@@ -16,7 +16,7 @@ void test2()
         Particle *p = new Particle(HEIGHT, WIDTH);
         b.particleList.push_back(p);
     }
-    b.particleList[0]->set_color(sf::Color(100, 250, 50));
+    b.particleList[0]->set_color(sf::Color::Magenta);
     sf::RenderWindow window(sf::VideoMode(HEIGHT, WIDTH), "Particles");
     window.setFramerateLimit(FPS);
  
