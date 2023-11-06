@@ -14,13 +14,13 @@ float distanceCalc(Particle *p, Particle *nbr)
     // float d = pow((nbr->x - p->x), 2) + pow((nbr->y - p->y), 2);
     // return pow(d + 0.1, 0.5);
 
-    sf::Vector2f difference = p->pos - nbr->pos;
+    sf::Vector2f difference = p->get_pos() - nbr->get_pos();
     return (float)pow(pow(difference.x, 2) + pow(difference.y, 2), 0.5);
 }
 
 float keCalc(Particle *p)
 {
-    float ke = 0.5 * p->mass * (pow(p->vel.x, 2) + pow(p->vel.y, 2));
+    float ke = 0.5 * p->get_mass() * (pow(p->get_vel().x, 2) + pow(p->get_vel().y, 2));
     return ke;
 }
 
@@ -28,7 +28,6 @@ sf::Vector2f unitVector(const sf::Vector2f vec)
 {
     return vec/magnitude(vec);
 }
-
 
 /********************************************************************/
 
@@ -39,8 +38,8 @@ Particle::Particle(int screen_height, int screen_width)
     vel.x = -150 + rand()%300;
     vel.y = -150 + rand()%300;
     accel.x = accel.y = 0;
-    accel.x = -300; 
-    radius = 20 + rand()%3;
+    //accel.y = 300; 
+    radius = 5 + rand()%10;
     mass = pow(radius, 3) * DENSITY;
 
     box_h = screen_height;
@@ -110,7 +109,7 @@ std::pair<int, int> Box::getGridcoord(sf::Vector2f position)
 
 void Box::updateGridmap(Particle* p)
 {
-    std::pair<int, int> coords = getGridcoord(p->pos);
+    std::pair<int, int> coords = getGridcoord(p->get_pos());
 
     std::vector<std::pair<int, int>> nbrs = {
         coords,
@@ -162,7 +161,7 @@ void Box::collisionUpdate(float dt)
         if(alreadyHandled.find(p) != alreadyHandled.end())
             continue;
         
-        auto myLoc = getGridcoord(p->pos);
+        auto myLoc = getGridcoord(p->get_pos());
         auto neighbors = getGridnbrs(myLoc.first, myLoc.second);
         for(auto nbr : neighbors)
         {
@@ -171,25 +170,22 @@ void Box::collisionUpdate(float dt)
                 continue;
             
 
-            if(distanceCalc(p, nbr) <= (nbr->radius + p->radius))
+            if(distanceCalc(p, nbr) <= (nbr->get_radius() + p->get_radius()))
             {
                 int iter = 0;
                 float distance = distanceCalc(p, nbr);
-                if(distance < (nbr->radius + p->radius))
+                if(distance < (nbr->get_radius() + p->get_radius()))
                 {
-                    float intersectAmt = (nbr->radius + p->radius) - distance;
-                    sf::Vector2f intersectDir(nbr->pos.x - p->pos.x, nbr->pos.y - p->pos.y);
+                    float intersectAmt = (nbr->get_radius() + p->get_radius()) - distance;
+                    sf::Vector2f intersectDir(nbr->get_pos().x - p->get_pos().x, nbr->get_pos().y - p->get_pos().y);
                     intersectDir = intersectAmt * unitVector(intersectDir);
-                    p->pos -= (intersectDir / 1.99F);
-                    nbr->pos += (intersectDir / 1.99F);
+                    p->set_pos(p->get_pos() - (intersectDir / 1.7F));
+                    nbr->set_pos(nbr->get_pos() + (intersectDir / 1.7F));
                 }
-                //printf("ID:%d --> old = %f   new = %f\n",p->id, distance, distanceCalc(p, nbr));
-
-
 
                 //elastic collision physics
-                float m1 = p->mass;
-                float m2 = nbr->mass;
+                float m1 = p->get_mass();
+                float m2 = nbr->get_mass();
                 float alpha, beta, gamma;
 
                 alpha = 2 * m1 / (m1 + m2);
@@ -197,13 +193,17 @@ void Box::collisionUpdate(float dt)
                 gamma = 2 * m2 / (m1 + m2);
 
                 //new velocities
-                auto newNbrVel = DAMPING * ((alpha * p->vel) - (beta * nbr->vel));                
-                auto newMyVel = DAMPING * ((beta * p->vel) + (gamma * nbr->vel));
-                p->vel = newMyVel;
-                nbr->vel = newNbrVel;
-                //alreadyHandled.insert(nbr);
-                //alreadyHandled.insert(p);
-                //break;
+                auto newNbrVel = DAMPING * ((alpha * p->get_vel()) - (beta * nbr->get_vel()));                
+                auto newMyVel = DAMPING * ((beta * p->get_vel()) + (gamma * nbr->get_vel()));
+                p->set_vel(newMyVel);
+                nbr->set_vel(newNbrVel);
+                if(magnitude(p->get_vel()) < 10 || magnitude(nbr->get_vel()) < 10)
+                {
+                    //code to add a small normal vel
+                    sf::Vector2f intersectDir(nbr->get_pos().x - p->get_pos().x, nbr->get_pos().y - p->get_pos().y);
+                    p->set_vel(p->get_vel() - 20.0F*unitVector(intersectDir));
+                    nbr->set_vel(nbr->get_vel() + 20.0F*unitVector(intersectDir));
+                } 
             }
         }
     }

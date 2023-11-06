@@ -6,15 +6,12 @@
 #include<cmath>
 
 
-#define GRIDSEG 10
+#define GRIDSEG 20
 #define DENSITY 0.1
-#define DAMPING 0.80F
+#define DAMPING 0.9F
 
 class Particle{
-public:
-    Particle(int screen_height, int screen_width);
-    void updatePosition(float dt);
-    void drawToScreen(sf::RenderWindow &window);
+private:
     int id;
     sf::Vector2f pos;
     sf::Vector2f vel;
@@ -23,6 +20,21 @@ public:
     int radius;
     int mass;
     sf::CircleShape circle;
+public:
+    Particle(int screen_height, int screen_width);
+
+    void set_pos(sf::Vector2f new_pos){pos = new_pos;};
+    void set_vel(sf::Vector2f new_vel){vel = new_vel;};
+    void set_accel(sf::Vector2f new_accel){accel = new_accel;};
+    void set_color(sf::Color color){circle.setFillColor(color);}
+    
+    sf::Vector2f get_pos(){ return pos;};
+    sf::Vector2f get_vel(){return vel;};
+    sf::Vector2f get_accel(){return accel;};
+    int get_mass(){return mass;};
+    int get_radius(){return radius;};
+    void updatePosition(float dt);
+    void drawToScreen(sf::RenderWindow &window);
 };
 
 class Box{
